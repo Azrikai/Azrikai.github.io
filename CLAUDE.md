@@ -6,9 +6,9 @@ Site portfolio d'Evan Bonhoure (étudiant admin systèmes, réseaux, cybersécur
 
 - HTML / CSS / JS statique. Pas de framework, pas de build, pas de backend, pas de dépendance npm.
 - Bilingue FR / EN. Responsive avec un vrai menu mobile. Respecter `prefers-reduced-motion` : dans ce cas, pas de démarrage, pas de bulles, pas de parallaxe, tout s'affiche directement.
-- Animations uniquement sur `transform` (y compris les propriétés `rotate`, `scale` et `translate`) et `opacity`. Exceptions assumées, à ne pas multiplier : l'iris de fin de démarrage (rayon d'un masque, une seconde, une fois), et la couleur du texte de la nav et des titres quand le fond change (sous l'eau, la nuit).
+- Animations uniquement sur `transform` (y compris les propriétés `rotate`, `scale` et `translate`) et `opacity`. Exception assumée, à ne pas multiplier : la couleur du texte de la nav et des titres quand le fond change (sous l'eau, la nuit).
 - Flou d'arrière-plan (`backdrop-filter`) limité à la nav et aux boutons posés sur le décor.
-- Police : Source Sans 3 (hébergée dans `assets/fonts/`). Pas d'appel à Google Fonts ni à un CDN. Le terminal et l'écran de démarrage utilisent la police à chasse fixe du système (aucun fichier à charger).
+- Police : Source Sans 3 (hébergée dans `assets/fonts/`). Pas d'appel à Google Fonts ni à un CDN. Le terminal utilise la police à chasse fixe du système (aucun fichier à charger) ; l'écran de démarrage, lui, n'utilise que Source Sans 3.
 - Pas d'emojis, pas de témoignages inventés, pas de compteur ou jauge, pas de poissons cartoon.
 - Les textes affichés ne doivent jamais contenir de champ à remplir (`[...]`) : les pages sont publiques dès le push.
 
@@ -51,11 +51,13 @@ Goûts d'Evan (novembre 2026), à respecter :
 
 ### Démarrage
 
-- `.fa-boot` : l'écran s'allume comme un vieux moniteur, dix lignes défilent au centre, l'orbe apparaît seul avec le nom, puis l'écran s'ouvre en iris sur le site. Durée : 6,4 s.
-- Historique des essais, pour ne pas y revenir : la version à 2,7 s était trop rapide pour lire ; la version avec rayons, voiles colorés et bulles autour de l'orbe a été jugée « super moche ». Rester sobre.
+- `.fa-boot` : une ligne d'horizon se trace, le nom en sort et se pose dessus avec son reflet dans l'eau, puis l'écran s'ouvre en deux le long de la ligne (`.fa-boot-sky` monte, `.fa-boot-sea` descend). Durée : 3,8 s. Uniquement `transform` et `opacity`.
+- Un seul texte (le nom), une seule police (Source Sans 3 en 300, comme le titre du site). Les couleurs suivent `data-sky` : jour, soir, nuit.
+- Historique des essais, pour ne pas y revenir : la version à 2,7 s avec des lignes à lire était trop rapide ; la version avec rayons, voiles colorés et bulles autour de l'orbe a été jugée « super moche » ; la version « vieux moniteur » (faux journal système en chasse fixe, orbe, iris, 6,4 s) faisait « vibecode ». Rester sobre : pas de faux journal, pas d'orbe, pas de lueur.
 - Le script en ligne du `<head>` pose `fa-booting` sur `<html>` une fois par session (`sessionStorage`, clé `fa-boot`), jamais si `prefers-reduced-motion`. Pas rejoué au rechargement ni au changement de langue.
 - Toute l'animation est en CSS (repères de temps en tête du bloc). `main.js` gère « Passer » (bouton, clic, touche) et pose `fa-booted` à la fin. `--fa-b` retarde les apparitions `.fa-up` du haut de page jusqu'à l'ouverture.
-- Les libellés sont dans le HTML (FR et EN). Pas de barre de progression (règle « pas de jauge »).
+- « Passer » ouvre l'écran tout de suite (classe `fa-boot-out`). Ses keyframes portent un autre nom (`…-out`) que celles du déroulé normal : avec le même nom, le navigateur garde l'animation en cours et coupe net.
+- Le libellé du bouton est dans le HTML (FR et EN). Pas de barre de progression (règle « pas de jauge »).
 - Attention aux noms de classes : une classe posée sur `<html>` ne doit pas porter le nom d'un composant. `fa-boot-skip` est le bouton ; l'état « on passe » s'appelle `fa-boot-out` (la confusion avait bloqué le défilement).
 
 ### Terminal en verre
@@ -111,11 +113,12 @@ Goûts d'Evan (novembre 2026), à respecter :
 - Retrait de textes à la demande d'Evan (voir Goûts), des pastilles numérotées et de la carte « Projets » du haut de page.
 - Schémas vivants, pastille de nav, changement de langue en fondu qui garde la section, bulles qui éclatent, reflet et cascades à l'apparition, pause du décor hors écran.
 - Recherche sur ce qui fait un bon portfolio (une quinzaine de sources). À retenir : le premier écran décide ; en cybersécurité, c'est le write-up avec schéma et méthode qui compte ; une seule idée forte tenue partout ; une intro animée doit être passable et jouée une fois ; un terminal doit garder peu de commandes et rester doublé d'un site classique.
-- Terminal en verre et écran de démarrage (trois versions, voir Démarrage).
+- Terminal en verre et écran de démarrage (quatre versions, voir Démarrage).
 - Haut de page refait : titre agrandi et terminal côte à côte, rayons du soleil.
 - Plongée : nav en verre sombre, gerbe de bulles à la surface, sillage, particules, carte de fin, bouton « Remonter à la surface ».
 - Effets tactiles : cartes qui basculent au défilement, gyroscope, reflet sous le doigt.
 - Ciel selon l'heure, lampe des profondeurs, surface de l'eau vivante.
+- Démarrage refait de zéro (quatrième version) : horizon, nom et reflet, ouverture en deux. Plus de faux journal système ni de police à chasse fixe.
 - Corrections au passage : le second bouton « Lancer la démo » ne faisait rien ; un lien vers une carte pas encore apparue s'arrêtait environ 130 px trop bas.
 
 ## À faire
@@ -135,7 +138,6 @@ Technique :
 - Jamais testé sur un vrai téléphone, ni dans Firefox ou Safari ; vitesse et accessibilité non mesurées. Tout a été vérifié dans Chrome, le mobile en simulation.
 - CSS mort depuis les retraits : `.fa-chip`, `.fa-row`, `.fa-thumb`, `.fa-t1` à `.fa-t5`, `.fa-link-l`.
 - Deux mises en page complètes par fichier : chaque changement se fait à 4 endroits et la page contient deux `h1`. Les fusionner en une seule page adaptative est un gros chantier, à faire avant d'ajouter beaucoup de contenu.
-- Le démarrage dure 6,4 s à chaque nouvel onglet : envisager une version courte pour les visiteurs qui reviennent.
 
 Idées gardées de côté : pare-feu interactif (un paquet passe ou éclate selon les vraies règles), commandes du terminal qui agissent sur la page (`ping`, `dive`), extinction (`shutdown`) en pendant du démarrage, tunnel VPN dans le schéma, aperçus de gameplay dans les cartes de jeux, son discret coupé par défaut.
 

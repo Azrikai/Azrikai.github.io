@@ -322,53 +322,49 @@ body{margin:0}
 @media (prefers-reduced-motion:no-preference){.desk .fa-term-key,.mob .fa-term-key{transition:transform .3s cubic-bezier(.2,.9,.25,1.25)}
 .desk .fa-term-key:active,.mob .fa-term-key:active{transform:scale(.95)}}
 
-/* ---------- Démarrage (6,4 s) : l'écran s'allume, le système se monte ligne par ligne, puis l'orbe
-   apparaît seul avec le nom, et l'écran s'ouvre en iris sur le site ----------
+/* ---------- Démarrage (3,8 s) : une ligne d'horizon se trace, le nom en sort et se pose dessus avec
+   son reflet dans l'eau, puis l'écran s'ouvre en deux le long de la ligne (le ciel monte, l'eau descend) ----------
    Posé par le script du <head> (classe fa-booting sur <html>) : une fois par session, jamais si
    « réduire les animations » est actif. Tout est en CSS ; main.js ne gère que « Passer » et le ménage.
    --fa-b retarde les apparitions du haut de page jusqu'à l'ouverture.
-   Repères : allumage 0,15 s · lignes 0,85 à 3,0 s · orbe 3,45 s · nom 3,9 s · iris 5,3 s · fin 6,4 s.
-   L'iris est un masque dont le rayon (--fa-iris) est animé : seule exception à la règle
-   « transform et opacity », pendant une seconde et une seule fois. Sobre exprès : la version
-   avec rayons, voiles colorés et bulles a été jugée moche par Evan. */
-@property --fa-iris{syntax:"<length>";inherits:true;initial-value:0px}
+   Repères : ligne 0,15 s · nom 0,55 s · ouverture 2,9 s · fin 3,85 s.
+   Uniquement transform et opacity. Une seule police (celle du site), aucun texte à part le nom.
+   Les couleurs suivent le ciel (data-sky) : jour, soir, nuit. */
 .fa-boot{display:none}
-@keyframes fa-boot-on{0%{transform:scale(0,.004)}42%{transform:scale(1,.004)}100%{transform:scale(1,1)}}
-@keyframes fa-boot-flash{0%{opacity:1}42%{opacity:.92}100%{opacity:0}}
-@keyframes fa-boot-line{from{opacity:0}to{opacity:1}}
-@keyframes fa-boot-hide{from{opacity:1}to{opacity:0}}
-@keyframes fa-boot-halo{0%{opacity:0;transform:scale(.7)}40%{opacity:1;transform:scale(1)}84%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.3)}}
-@keyframes fa-boot-orb{0%{opacity:0;transform:scale(.82)}36%{opacity:1;transform:scale(1)}84%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
-@keyframes fa-boot-ring{0%{opacity:0;transform:scale(1)}20%{opacity:.55}100%{opacity:0;transform:scale(2.2)}}
-@keyframes fa-boot-name{0%{opacity:0;transform:translate3d(0,10px,0)}36%{opacity:1;transform:translate3d(0,0,0)}82%{opacity:1;transform:translate3d(0,0,0)}100%{opacity:0;transform:translate3d(0,0,0)}}
-@keyframes fa-boot-iris{from{--fa-iris:54px}to{--fa-iris:84vmax}}
-@keyframes fa-boot-edge{0%{opacity:0}12%{opacity:.9}70%{opacity:.5}100%{opacity:0}}
-@keyframes fa-boot-off{0%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
-@keyframes fa-spin{to{transform:rotate(360deg)}}
-html.fa-booting{--fa-b:5.5s}
-html.fa-booting .fa-boot{position:fixed;inset:0;z-index:100;display:block;overflow:hidden;color:#cfe6fa;font-family:"Source Sans 3","Lucida Grande","Trebuchet MS",sans-serif;cursor:pointer;animation:fa-boot-off .3s ease 6.1s both,fa-boot-iris 1s cubic-bezier(.65,0,.35,1) 5.3s forwards}
-html.fa-booting.fa-boot-out .fa-boot{animation:fa-boot-off .3s ease both}
+@keyframes fa-boot-draw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes fa-boot-rise{from{transform:translate3d(0,125%,0)}to{transform:translate3d(0,0,0)}}
+@keyframes fa-boot-show{from{opacity:0}}
+@keyframes fa-boot-hide{to{opacity:0}}
+@keyframes fa-boot-up{to{transform:translate3d(0,-101%,0)}}
+@keyframes fa-boot-down{to{transform:translate3d(0,101%,0)}}
+@keyframes fa-boot-off{to{visibility:hidden}}
+/* « Passer » : mêmes mouvements sous un autre nom, sinon le navigateur garde l'animation en cours (déjà trop avancée) et coupe net */
+@keyframes fa-boot-up-out{to{transform:translate3d(0,-101%,0)}}
+@keyframes fa-boot-down-out{to{transform:translate3d(0,101%,0)}}
+@keyframes fa-boot-off-out{to{visibility:hidden}}
+html.fa-booting{--fa-b:2.95s}
+html.fa-booting .fa-boot{--fa-bi:#052548;--fa-b0:#bfe3fa;--fa-b1:#e9f8fe;--fa-b2:#a6dcf7;--fa-br:.17;position:fixed;inset:0;z-index:100;display:block;overflow:hidden;color:var(--fa-bi);font-family:"Source Sans 3","Lucida Grande","Trebuchet MS",sans-serif;cursor:pointer;animation:fa-boot-off .01s linear 3.85s both}
+html[data-sky="dusk"].fa-booting .fa-boot{--fa-b0:#ffd9b4;--fa-b1:#fff0dc;--fa-b2:#f6cfa6;--fa-br:.15}
+html[data-sky="night"].fa-booting .fa-boot{--fa-bi:#eaf6ff;--fa-b0:#14224f;--fa-b1:#223478;--fa-b2:#16265a;--fa-br:.2}
 html.fa-booted .fa-boot{display:none}
-.fa-boot-black{position:absolute;inset:0;background:#01050d;animation:fa-boot-hide .01s linear 1.2s both}
-.fa-boot-scr{position:absolute;inset:0;background:radial-gradient(circle 76vmax at 50% 50%,#0e4a86 0%,#062a55 46%,#020d20 100%);-webkit-mask-image:radial-gradient(circle at 50% 50%,transparent calc(var(--fa-iris) - 1px),#000 var(--fa-iris));mask-image:radial-gradient(circle at 50% 50%,transparent calc(var(--fa-iris) - 1px),#000 var(--fa-iris));animation:fa-boot-on .55s cubic-bezier(.2,.8,.2,1) .15s both}
-.fa-boot-scr::after{content:"";position:absolute;inset:0;background:#eaf8ff;animation:fa-boot-flash .6s ease-out .15s both}
-.fa-boot-edge{position:absolute;inset:0;opacity:0;background:#d6f0ff;-webkit-mask-image:radial-gradient(circle at 50% 50%,transparent calc(var(--fa-iris) - 4px),#000 calc(var(--fa-iris) - 2.5px),#000 var(--fa-iris),transparent calc(var(--fa-iris) + 1.5px));mask-image:radial-gradient(circle at 50% 50%,transparent calc(var(--fa-iris) - 4px),#000 calc(var(--fa-iris) - 2.5px),#000 var(--fa-iris),transparent calc(var(--fa-iris) + 1.5px));animation:fa-boot-edge 1s ease-out 5.3s both}
-.fa-boot-log{position:absolute;left:50%;top:50%;transform:translate(-50%,-56%);font-family:ui-monospace,"Cascadia Mono","Cascadia Code",Consolas,"SF Mono",Menlo,"DejaVu Sans Mono",monospace;font-size:16px;line-height:1.9;white-space:pre;color:#a9d4f5;animation:fa-boot-hide .3s ease 3.2s both}
-.fa-boot-log>span{display:block;opacity:0;animation:fa-boot-line .01s linear both;animation-delay:calc(.85s + var(--n,0)*.24s)}
-.fa-boot-log>span:first-child,.fa-boot-log>span:last-child{color:#ffffff}
-.fa-boot-log b{font-weight:400;color:#b6f06a;opacity:0;animation:fa-boot-line .01s linear both;animation-delay:calc(.98s + var(--n,0)*.24s)}
-.fa-boot-logo{position:absolute;left:50%;top:50%;width:0;height:0}
-.fa-boot-orb,.fa-boot-ring{position:absolute;left:-56px;top:-56px;width:112px;height:112px;border-radius:50%}
-.fa-boot-orb{opacity:0;background:radial-gradient(circle at 34% 26%,#ffffff 0%,rgba(255,255,255,.9) 9%,rgba(255,255,255,0) 40%),radial-gradient(circle at 60% 90%,rgba(190,255,170,.9) 0%,rgba(190,255,170,0) 50%),linear-gradient(180deg,#63d2f6 0%,#1c8fe0 55%,#2fa84a 100%);box-shadow:inset 0 -8px 14px rgba(0,60,120,.35),0 0 0 1px rgba(11,90,168,.8);animation:fa-boot-orb 2.2s ease 3.45s both}
-.fa-boot-halo{position:absolute;left:-200px;top:-200px;width:400px;height:400px;border-radius:50%;opacity:0;background:radial-gradient(circle,rgba(140,215,255,.4) 0%,rgba(140,215,255,.12) 42%,rgba(140,215,255,0) 68%);animation:fa-boot-halo 2.2s ease 3.4s both}
-.fa-boot-ring{box-shadow:0 0 0 1.5px rgba(190,236,255,.7);opacity:0;animation:fa-boot-ring 1.9s ease-out 3.95s both}
-.fa-boot-name{position:absolute;left:0;right:0;top:calc(50% + 88px);text-align:center;font-size:32px;font-weight:300;letter-spacing:.04em;color:#ffffff;opacity:0;animation:fa-boot-name 1.5s ease 3.9s both}
-.fa-boot-skip{position:absolute;right:20px;bottom:20px;appearance:none;min-height:44px;padding:0 20px;border-radius:999px;border:1px solid rgba(150,210,255,.42);background:linear-gradient(180deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,.05) 100%);color:#cfe6fa;font:inherit;font-size:15px;cursor:pointer;animation:fa-boot-name 4.4s linear .9s both}
-.fa-boot-skip:focus-visible{outline:3px solid #ffb300;outline-offset:3px}
+.fa-boot-sky,.fa-boot-sea{position:absolute;left:0;right:0;will-change:transform}
+.fa-boot-sky{top:0;height:calc(50% + 1px);background:linear-gradient(180deg,var(--fa-b0) 0%,var(--fa-b1) 100%);animation:fa-boot-up .9s cubic-bezier(.76,0,.24,1) 2.9s both}
+.fa-boot-sea{top:50%;bottom:0;background:linear-gradient(180deg,var(--fa-b1) 0%,var(--fa-b2) 100%);animation:fa-boot-down .9s cubic-bezier(.76,0,.24,1) 2.9s both}
+.fa-boot-clip{position:absolute;left:0;right:0;bottom:1px;overflow:hidden;padding:.1em 20px .13em;text-align:center;font-size:clamp(38px,6.2vw,78px);font-weight:300;line-height:1;letter-spacing:-.02em;white-space:nowrap}
+.fa-boot-sea .fa-boot-clip{top:0;bottom:auto;transform:scaleY(-1);opacity:var(--fa-br);-webkit-mask-image:linear-gradient(0deg,#000 8%,transparent 82%);mask-image:linear-gradient(0deg,#000 8%,transparent 82%)}
+.fa-boot-w{display:inline-block;animation:fa-boot-rise 1.1s cubic-bezier(.16,1,.3,1) .55s both}
+.fa-boot-w+.fa-boot-w{animation-delay:.65s}
+.fa-boot-line{position:absolute;left:0;right:0;top:50%;height:1px;opacity:.55;background:linear-gradient(90deg,transparent 0%,var(--fa-bi) 16%,var(--fa-bi) 84%,transparent 100%);animation:fa-boot-draw 1.2s cubic-bezier(.65,0,.35,1) .15s both,fa-boot-hide .3s ease 2.85s forwards}
+.fa-boot-skip{position:absolute;right:14px;bottom:10px;appearance:none;min-height:44px;padding:0 14px;border:0;border-radius:8px;background:none;color:inherit;font:inherit;font-size:15px;opacity:.6;cursor:pointer;animation:fa-boot-show .5s ease 1s both,fa-boot-hide .3s ease 2.85s forwards}
+.fa-boot-skip:hover{opacity:1}
+.fa-boot-skip:focus-visible{outline:3px solid #ffb300;outline-offset:-3px;opacity:1}
+html.fa-boot-out .fa-boot{animation:fa-boot-off-out .01s linear .75s both}
+html.fa-boot-out .fa-boot-sky{animation:fa-boot-up-out .7s cubic-bezier(.76,0,.24,1) both}
+html.fa-boot-out .fa-boot-sea{animation:fa-boot-down-out .7s cubic-bezier(.76,0,.24,1) both}
+html.fa-boot-out .fa-boot-line,html.fa-boot-out .fa-boot-skip{animation:none;opacity:0}
 html.fa-booting .desk .fa-up,html.fa-booting .mob .fa-up{animation-delay:calc(var(--fa-b,0s) + var(--fa-d,0s))}
 html.fa-booting .desk .fa-win.fa-up>.fa-pane>*,html.fa-booting .mob .fa-win.fa-up>.fa-pane>*{animation-delay:calc(var(--fa-b,0s) + .5s + var(--fa-i,0)*70ms)}
 html.fa-booting .desk .fa-win.fa-up>.fa-pane::after,html.fa-booting .mob .fa-win.fa-up>.fa-pane::after{animation-delay:calc(var(--fa-b,0s) + .5s + var(--fa-d,0s))}
-@media (max-width:760px){.fa-boot-log{font-size:14px}.fa-boot-name{font-size:26px;top:calc(50% + 76px)}.fa-boot-orb,.fa-boot-ring{left:-46px;top:-46px;width:92px;height:92px}.fa-boot-halo{left:-160px;top:-160px;width:320px;height:320px}@keyframes fa-boot-iris{from{--fa-iris:44px}to{--fa-iris:84vmax}}}
 
 /* ---------- Haut de page : rayons du soleil, terminal posé en 3D ---------- */
 .desk .fa-sun,.mob .fa-sun{position:absolute;border-radius:50%;pointer-events:none;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.26) 0deg 5deg,rgba(255,255,255,0) 5deg 18deg);-webkit-mask-image:radial-gradient(circle,#000 0%,rgba(0,0,0,.5) 26%,transparent 62%);mask-image:radial-gradient(circle,#000 0%,rgba(0,0,0,.5) 26%,transparent 62%)}

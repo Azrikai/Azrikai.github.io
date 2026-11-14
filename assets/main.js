@@ -81,10 +81,10 @@
     }
     function skip() {
       if (!booting || html.classList.contains('fa-boot-out')) return;
-      // Temps écoulé depuis l'allumage : les apparitions du haut de page partent juste après
+      // Temps écoulé depuis le début : l'écran s'ouvre tout de suite, les apparitions du haut de page suivent
       var a = boot.getAnimations ? boot.getAnimations()[0] : null;
       var t = a && typeof a.currentTime === 'number' ? a.currentTime / 1000 : 0;
-      if (t > 5.25) return;
+      if (t > 2.85) return;
       html.style.setProperty('--fa-b', (t + 0.15).toFixed(2) + 's');
       html.classList.add('fa-boot-out');
     }
