@@ -194,7 +194,7 @@
     }
 
     // Décor : les boucles (nuages, bulles, vagues, algues) ne tournent que près de l'écran
-    var loops = list('.fa-drift,.fa-float,.fa-rise,.fa-wob,.fa-heave,.fa-shine,.fa-sway,.fa-swell,.fa-swell-b,.fa-swell-m,.fa-sun,.fa-snow').filter(visible);
+    var loops = list('.fa-drift,.fa-float,.fa-rise,.fa-wob,.fa-heave,.fa-shine,.fa-sway,.fa-swell,.fa-swell-b,.fa-swell-m,.fa-sun,.fa-snow,.fa-loop').filter(visible);
     var pio = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) { e.target.classList.toggle('fa-off', !e.isIntersecting); });
     }, { rootMargin: '260px 0px 260px 0px' });
@@ -204,7 +204,7 @@
     var layers = list('[data-px]').filter(visible).map(function (el) {
       return { el: el, k: parseFloat(el.getAttribute('data-px')) || 0, at: 0 };
     });
-    var cur = se.scrollTop, target = cur, raf = 0, on = false, last = 0;
+    var cur = se.scrollTop, target = cur, raf = 0, on = false, last = 0, dive = 0;
     // Souris (bureau) : le décor suit aussi le pointeur, ce qui donne de la profondeur
     var hover = !!(fine && fine.matches);
     var mx = 0, my = 0, tmx = 0, tmy = 0;
@@ -270,6 +270,12 @@
       last = now;
       var ks = 1 - Math.pow(0.91, dt / 16.7), km = 1 - Math.pow(0.94, dt / 16.7);
       var gap = target - cur;
+      // Plongée : quand on descend vite sous l'eau, des bulles filent vers le haut le long des bords
+      if (gap > 46 && now - dive > 80 && target > deepTop - vh * 0.5) {
+        dive = now;
+        bubble((Math.random() < 0.5 ? 0.015 + Math.random() * 0.09 : 0.895 + Math.random() * 0.09) * window.innerWidth,
+          vh * (0.5 + Math.random() * 0.55), 4 + Math.random() * 9, 240 + Math.min(gap, 400) * 0.9 + Math.random() * 160, 800 + Math.random() * 600);
+      }
       cur = Math.abs(gap) < 0.1 ? target : cur + gap * ks;
       var gx = tmx - mx, gy = tmy - my;
       mx = Math.abs(gx) < 0.001 ? tmx : mx + gx * km;
@@ -503,7 +509,7 @@
         var o0 = s.t0 / total, o1 = s.t1 / total, e = Math.min(0.1 / total, (o1 - o0) / 3);
         group.push(pk.animate([
           { offset: 0, transform: A, opacity: 0 },
-          { offset: o0, transform: A, opacity: 0 },
+          { offset: o0, transform: A, opacity: 0, easing: 'cubic-bezier(.45,0,.3,1)' },
           { offset: o0 + e, opacity: 1 },
           { offset: o1 - e, opacity: 1 },
           { offset: o1, transform: B, opacity: 0 },
@@ -524,7 +530,7 @@
           var o = pt / total;
           if (o - d <= lastO || o + 2 * d >= 1) return;
           kf.push({ offset: o - d, scale: '1', easing: 'cubic-bezier(.2,.8,.3,1)' });
-          kf.push({ offset: o, scale: '1.055', easing: 'cubic-bezier(.4,0,.2,1)' });
+          kf.push({ offset: o, scale: '1.035', easing: 'cubic-bezier(.4,0,.2,1)' });
           kf.push({ offset: o + 2 * d, scale: '1' });
           lastO = o + 2 * d;
         });
@@ -594,6 +600,119 @@
     });
     if (hit) pop(hit);
     return !!hit;
+  }
+
+  /* ---------- 1 quinquies. Faune et câble : oiseaux, voilier, méduses de verre, câble sous-marin ----------
+     Ce décor est créé ici, une fois, dans les deux mises en page : écrit dans le HTML, il faudrait le
+     recopier à 4 endroits. Les boucles sont en CSS (.fa-anim) et s'arrêtent quand leur support (.fa-loop)
+     reçoit .fa-off. Seules les lueurs du câble sont animées ici, point par point le long du tracé.
+     Méduses et lueurs sont placées après .fa-lamp : elles restent visibles dans le noir du fond. */
+  var CABLE = 'M-20 262C90 262 170 278 270 276S470 262 560 259S700 248 770 250S930 272 1010 271S1180 278 1250 273S1400 262 1460 259';
+  var sceneLay = [];
+  function sceneOn() {
+    function mk(cls, html) {
+      var e = doc.createElement('div');
+      e.className = cls; e.setAttribute('aria-hidden', 'true');
+      if (html) e.innerHTML = html;
+      return e;
+    }
+    var BIRD = '<svg viewBox="0 0 28 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 9Q7 1 14 8Q21 1 27 9"/></svg>';
+    var FLOCK = [[0, 34, 1.4], [50, 12, 1.1], [92, 48, 1.25], [140, 2, 0.95], [178, 36, 1.05], [228, 18, 0.85], [30, 72, 0.9]];
+    var BOAT = '<svg viewBox="0 0 40 62"><g opacity=".2" transform="translate(0 82) scale(1 -1)"><path d="M21 5L35 31H21Z" fill="#fff"/><path d="M17 10V31H6Z" fill="#fff"/><path d="M4 34H36L31 41H9Z" fill="#fff"/></g>' +
+      '<path d="M21 5L35 31H21Z" fill="#fff" stroke="#6fa9d6" stroke-width=".8" stroke-linejoin="round"/><path d="M21 5L27 31H21Z" fill="#d5ebfa"/>' +
+      '<path d="M17 10V31H6Z" fill="#f4fbff" stroke="#6fa9d6" stroke-width=".8" stroke-linejoin="round"/>' +
+      '<path d="M19 3V34" stroke="#234a75" stroke-width="1.2" stroke-linecap="round"/>' +
+      '<path d="M4 34H36L31 41H9Z" fill="#fff" stroke="#3f78ad" stroke-width=".8" stroke-linejoin="round"/><path d="M6.5 37.5H33.5L31 41H9Z" fill="#1a72d8"/></svg>';
+    var TENT = '<svg class="fa-jelly-tent fa-anim" viewBox="0 0 60 80" fill="none" stroke-linecap="round">' +
+      '<path d="M22 0C17 12 27 22 21 36C16 48 26 56 22 66" stroke="rgba(190,236,255,.3)" stroke-width="3.4"/>' +
+      '<path d="M38 0C43 12 33 22 39 36C44 48 34 56 38 66" stroke="rgba(190,236,255,.3)" stroke-width="3.4"/>' +
+      '<path d="M12 0C6 14 18 26 11 42C6 54 15 64 10 78" stroke="rgba(224,247,255,.6)" stroke-width="1.3"/>' +
+      '<path d="M30 0C25 16 35 28 29 44C24 58 34 66 30 80" stroke="rgba(224,247,255,.6)" stroke-width="1.3"/>' +
+      '<path d="M48 0C54 14 42 26 49 42C54 54 45 64 50 78" stroke="rgba(224,247,255,.6)" stroke-width="1.3"/></svg>';
+    // Méduses : place dans le bloc sous-marin, taille, parallaxe (négative : elles semblent plus proches)
+    var JELLY = {
+      desk: [['top:24px;right:8%', 82, -0.1], ['top:600px;left:1.8%', 60, -0.14], ['top:1000px;right:2.4%', 70, -0.12],
+        ['top:1030px;left:56%', 42, -0.07], ['bottom:150px;left:15%', 50, -0.06]],
+      mob: [['top:8px;right:7%', 46, -0.08], ['top:46%;right:1%', 34, -0.1], ['bottom:92px;left:10%', 38, -0.05]]
+    };
+    list('.desk,.mob').forEach(function (root) {
+      var small = root.classList.contains('mob'), f = small ? 0.7 : 1;
+      // Horizon : un vol d'oiseaux devant les montagnes, un voilier sur le lac (derrière les collines)
+      var tint = root.querySelector('.fa-tint-sky'), shore = tint && tint.previousElementSibling;
+      var hills = shore && list('[data-px]', shore).pop();
+      if (hills && hills.parentNode === shore) {
+        shore.insertBefore(mk('fa-boat-lane fa-loop', '<div class="fa-boat-go fa-anim"><div class="fa-boat fa-anim">' + BOAT + '</div></div>'), hills);
+        shore.insertBefore(mk('fa-birds fa-loop', '<div class="fa-flock fa-anim">' + FLOCK.map(function (b, i) {
+          return '<i class="fa-anim" style="left:' + (b[0] * f).toFixed(0) + 'px;top:' + (b[1] * f).toFixed(0) + 'px;width:' + (28 * b[2] * f).toFixed(1) +
+            'px;animation-delay:' + (-i * 0.17).toFixed(2) + 's">' + BIRD + '</i>';
+        }).join('') + '</div>'), hills);
+      }
+      // Sous l'eau
+      var dune = root.querySelector('.fa-dune'), bed = dune && dune.parentNode, sea = bed && bed.parentNode;
+      if (!sea || !sea.querySelector('.fa-lamp')) return;
+      JELLY[small ? 'mob' : 'desk'].forEach(function (j, i) {
+        var w = mk('fa-px fa-loop', '<div class="fa-jelly" style="--s:' + j[1] + 'px;--dl:' + (-i * 1.3).toFixed(1) + 's"><div class="fa-jelly-in fa-anim">' +
+          '<div class="fa-jelly-bell fa-anim"></div>' + TENT + '</div></div>');
+        w.setAttribute('data-px', j[2]);
+        w.style.cssText = 'position:absolute;' + j[0];
+        sea.appendChild(w);
+      });
+      // Câble posé sur le fond, lueurs qui le parcourent (au-dessus du voile de la lampe)
+      var box = mk('fa-cable', '<svg viewBox="0 0 1440 300" preserveAspectRatio="none"><path class="fa-cable-a" d="' + CABLE + '"/><path class="fa-cable-b" d="' + CABLE + '" transform="translate(0 -1.6)"/></svg>');
+      bed.appendChild(box);
+      var fx = mk('fa-cable-fx', '<i class="fa-glow"></i><i class="fa-glow"></i><i class="fa-glow fa-glow-b"></i>');
+      sea.appendChild(fx);
+      var svg = box.firstChild, path = svg.firstChild, dots = list('i', fx), anims = [], seen = true;
+      function lay() {
+        anims.forEach(function (a) { a.cancel(); }); anims = [];
+        var r = svg.getBoundingClientRect();
+        if (!r.width || !path.getTotalLength) return;
+        var L = path.getTotalLength(), N = 40, sx = r.width / 1440, sy = r.height / 300, pts = [];
+        for (var i = 0; i <= N; i++) { var p = path.getPointAtLength(L * i / N); pts.push('translate3d(' + (p.x * sx).toFixed(1) + 'px,' + (p.y * sy).toFixed(1) + 'px,0)'); }
+        fx.style.height = r.height.toFixed(0) + 'px';
+        dots.forEach(function (d, n) {
+          var back = n === 2; // la lueur verte remonte le câble dans l'autre sens, comme le flux b des schémas
+          if (still() || !canAnimate) { d.style.transform = pts[[9, 31, 20][n]]; d.style.opacity = '1'; return; }
+          d.style.transform = d.style.opacity = '';
+          var frames = pts.map(function (t, i) { return { transform: back ? pts[N - i] : t, opacity: i === 0 || i === N ? 0 : 1 }; });
+          var a = d.animate(frames, { duration: back ? 17000 : 12000, delay: -n * 5200, iterations: Infinity, easing: 'linear' });
+          if (!seen) a.pause();
+          anims.push(a);
+        });
+      }
+      lay();
+      sceneLay.push(lay);
+      if (window.IntersectionObserver) new IntersectionObserver(function (es) {
+        seen = es[es.length - 1].isIntersecting;
+        anims.forEach(function (a) { if (seen) a.play(); else a.pause(); });
+      }, { rootMargin: '200px 0px 200px 0px' }).observe(fx);
+    });
+    var wait = 0;
+    function relay() { clearTimeout(wait); wait = setTimeout(function () { sceneLay.forEach(function (fn) { fn(); }); }, 220); }
+    window.addEventListener('resize', relay);
+    if (reduce && reduce.addEventListener) reduce.addEventListener('change', relay);
+  }
+  // Clic sur une méduse : elle se contracte et file vers le haut, quelques bulles s'échappent
+  function kickAt(e) {
+    if (still() || !canAnimate) return false;
+    var hit = null;
+    list('.fa-jelly').forEach(function (j) {
+      if (hit || j.faKick || !visible(j)) return;
+      var r = j.getBoundingClientRect();
+      if (e.clientX < r.left - 8 || e.clientX > r.right + 8 || e.clientY < r.top - 8 || e.clientY > r.bottom + 8) return;
+      hit = j;
+    });
+    if (!hit) return false;
+    hit.faKick = true;
+    var r = hit.getBoundingClientRect();
+    for (var i = 0; i < 4; i++) bubble(r.left + r.width * (0.2 + Math.random() * 0.6), r.top + r.height * 0.5, 4 + Math.random() * 7, 60 + Math.random() * 90, 800 + Math.random() * 600, i * 70);
+    hit.animate([
+      { transform: 'translate3d(0,0,0) scale(1,1)' },
+      { transform: 'translate3d(0,-10px,0) scale(.78,1.16)', offset: 0.14 },
+      { transform: 'translate3d(0,-84px,0) scale(1.05,.95)', offset: 0.46 },
+      { transform: 'translate3d(0,0,0) scale(1,1)' }
+    ], { duration: 3000, easing: 'cubic-bezier(.3,.6,.3,1)' }).onfinish = function () { hit.faKick = false; };
+    return true;
   }
 
   /* ---------- 2. Navigation : section en cours, pastille de verre, langue ---------- */
@@ -797,7 +916,7 @@
       // Clic dans le décor : une bulle sous le pointeur éclate
       if (!(e.target.closest && e.target.closest('a,button,nav,.fa-win'))) {
         if (onWater(e.clientY)) ripple(e.clientX, e.clientY, true);
-        popAt(e);
+        if (!popAt(e)) kickAt(e);
       }
       return;
     }
@@ -874,6 +993,7 @@
     // Arborescence : un « fichier » par carte de la page
     var FILES = [
       { dir: 'labs', name: 'minecraft', alt: [], id: 'lab-minecraft' },
+      { dir: 'labs', name: 'robocat', alt: [], id: 'lab-robocat' },
       { dir: 'labs', name: en ? 'network' : 'reseau', alt: ['network', 'reseau', 'réseau'], id: 'lab-reseau' },
       { dir: GAMES, name: 'zombie', alt: ['zombies'], id: 'demo', play: true },
       { dir: GAMES, name: 'rpg', alt: [], id: 'rpg' }
@@ -957,7 +1077,7 @@
           print('cd: ' + arg + ': ' + T.noDir, 'fa-t-err');
         },
         play: function (arg) {
-          var f = arg ? find(arg) : FILES[2];
+          var f = arg ? find(arg) : FILES.filter(function (x) { return x.play; })[0];
           if (!f) { print('play: ' + arg + ': ' + T.noFile, 'fa-t-err'); return; }
           if (!f.play) { print(f.name + ': ' + T.noBuild, 'fa-t-dim'); return; }
           var a = el(f.id), btn = a && a.querySelector('.fa-demo [data-demo="play"]'), d = btn && demoParts(btn);
@@ -1088,6 +1208,7 @@
   }
 
   /* ---------- Démarrage ---------- */
+  sceneOn();
   termOn();
   function start() { spyOn(); setTimeout(motionOn, 80); }
   if (mq && mq.addEventListener) mq.addEventListener('change', function () {

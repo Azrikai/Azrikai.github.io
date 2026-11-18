@@ -1,6 +1,6 @@
 # CLAUDE.md : portfolio evanbonhoure.me
 
-Site portfolio d'Evan Bonhoure (étudiant admin systèmes, réseaux, cybersécurité ; fait aussi des jeux). Public visé : recruteurs. Hébergé sur GitHub Pages, domaine `evanbonhoure.me` (fichier `CNAME`, ne pas le supprimer).
+Site portfolio d'Evan Bonhoure (étudiant admin systèmes, réseaux, cybersécurité ; fait aussi des jeux). Site perso, fait pour le plaisir et pour montrer ce qu'Evan sait faire et a fait : ce n'est pas un site de recherche d'emploi. Hébergé sur GitHub Pages, domaine `evanbonhoure.me` (fichier `CNAME`, ne pas le supprimer).
 
 ## Stack et règles
 
@@ -24,16 +24,18 @@ Goûts d'Evan (novembre 2026), à respecter :
 - Pas de pastilles numérotées (« Lab 01 », « Jeu 03 »).
 - Peu de texte : la ligne en majuscules et la phrase sous le titre, le compteur « 4 projets · 2 familles », la ligne « Contexte · Schéma · … » et la mention du pied de page ont été retirés à sa demande.
 - Il veut un effet à l'arrivée, mais sobre : un seul effet fort plutôt qu'une accumulation (voir Démarrage).
+- Pas de gabarit répété : des cartes identiques font « liste à lire ». Chaque projet a sa propre mise en scène, liée à son sujet, avec peu de texte.
 
 À ne pas introduire : dégradé violet/noir, fond blanc pur, néon, arc-en-ciel, bande colorée en haut, grille bento, trois cartes de features identiques, étoiles scintillantes, flèches animées, hover animé partout (les effets de survol sont réservés aux boutons et aux cartes), puces à checks verts, paliers de pricing.
 
 ## Fichiers
 
 - `index.html` : version française. `en/index.html` : version anglaise.
+- `tout/index.html` et `en/all/index.html` : page « Tout le reste » (les autres projets). Une seule mise en page adaptative, sans `main.js` : un changement s'y fait donc à 2 endroits. Styles dans `assets/tout.css`, posés sur les composants de `assets/writeup.css`, comportement dans `assets/tout.js`.
 - Chaque fichier contient deux mises en page : `<div class="desk">` (bureau) et `<div class="mob">` (mobile, affiché sous 760 px). Un changement de texte ou de contenu se fait donc à 4 endroits : FR bureau, FR mobile, EN bureau, EN mobile. Chaque mise en page tient sur une seule très longue ligne : pour une modification répétée, un petit script Python qui remplace des chaînes exactes aux 4 endroits est plus sûr qu'une édition à la main.
 - Les ids de la version mobile sont préfixés par `m-` (`#m-labs`, etc.) pour éviter les doublons. Les ancres mobiles pointent vers ces ids.
 - Hors des deux mises en page, donc une seule fois par fichier : le script en ligne du `<head>` et l'écran de démarrage `.fa-boot` juste après `<body>`.
-- `assets/style.css` : les règles des composants sont préfixées `.desk` ou `.mob`, et une règle qui concerne les deux mises en page doit être écrite des deux côtés. Les keyframes d'origine ont le suffixe `-d` ou `-m` ; celles des blocs ajoutés ensuite (communs aux deux mises en page) n'en ont pas. Ne sont pas préfixés : le démarrage (`.fa-boot…`), les calques créés par le script (`.fa-fx`, `.fa-rip`) et les règles `html[data-sky=…]`.
+- `assets/style.css` : les règles des composants sont préfixées `.desk` ou `.mob`, et une règle qui concerne les deux mises en page doit être écrite des deux côtés. Les keyframes d'origine ont le suffixe `-d` ou `-m` ; celles des blocs ajoutés ensuite (communs aux deux mises en page) n'en ont pas. Ne sont pas préfixés : le démarrage (`.fa-boot…`), les calques créés par le script (`.fa-fx`, `.fa-rip`), le décor créé par `sceneOn` (`.fa-birds`, `.fa-boat`, `.fa-jelly`, `.fa-cable`) et les règles `html[data-sky=…]`.
 - `assets/main.js` : tout le comportement, sans dépendance. Sections numérotées dans le fichier.
 - `assets/fonts.css`, `assets/writeup.css` : polices et styles du modèle de write-up.
 - `_modeles/writeup.html` : modèle de page de write-up (contexte, schéma, étapes, galères, bilan). Le dossier commence par `_`, donc GitHub Pages ne le publie pas.
@@ -42,9 +44,10 @@ Goûts d'Evan (novembre 2026), à respecter :
 
 - **Nav** : sur bureau, `main.js` injecte une pastille de verre (`.fa-nav-pill`) qui glisse vers le lien de la section en cours ; sur mobile, le lien actif du menu reçoit `aria-current`. Le lien de changement de langue garde la section en cours (`/en/#labs`), et le passage FR / EN se fait en fondu (`@view-transition`). La nav passe en verre sombre (`.fa-deep`) sous la surface de l'eau et la nuit.
 - **Haut de page** : titre sur deux lignes, deux boutons, terminal.
-- **Labs** : deux cartes, chacune avec son schéma, son texte, ses étiquettes `.fa-tag` et un bouton « Write-up bientôt » désactivé.
+- **Labs** : une scène par projet (classes `.st-*`, en fin de `style.css`), puis le bouton « Voir tout le reste ». Minecraft : île de blocs qui flotte sur le ciel, sans carte. RoboCat : panorama d'un champ avec le trajet radio, texte en bandeau dessous. Maquette réseau : salle sombre, schéma du pare-feu sur toute la largeur. Ce qui n'existe pas encore est en pointillés (`.fa-btn-off`, `.fa-ph`) : un bouton désactivé ne doit pas ressembler à un bouton de verre.
 - **Surface de l'eau** : bloc des vagues (`.fa-heave`), entre le ciel et le fond.
-- **Jeux** : carte du jeu de zombies avec lecteur (`.fa-demo`), carte du RPG en pleine largeur.
+- **Jeux** : jeu de zombies en mode cinéma, lecteur (`.fa-demo`) au centre ; RPG sur un écran de combat noir, avec un coeur qui esquive (illustration animée, pas une capture du jeu).
+- **Page « Tout le reste »** : un lagon de bulles. Une bulle choisie affiche sa fiche dans un panneau à droite, ou dans un volet qui monte du bas sur mobile (`assets/tout.js`). Une nouvelle entrée s'ajoute en FR et en EN : bulle (`.t-bub`) et fiche (`.t-info`).
 - **Fin de page** : à propos et contact dans une même carte de verre sombre (`.fa-pane-dark`), puis le bouton « Remonter à la surface ».
 
 ## Comportements (`main.js` et `style.css`)
@@ -84,6 +87,13 @@ Goûts d'Evan (novembre 2026), à respecter :
 - `flowsOn()` y fait circuler des paquets (`.fa-pk`, flux `a` bleu, les suivants verts) et fait pulser le nœud d'arrivée. Nœuds, zones et fils se montent un par un à l'apparition (`--fa-i`).
 - Flux actuels : migration et connexion des joueurs (Minecraft) ; Internet vers la DMZ et LAN vers Internet (maquette réseau). Ces deux derniers sont une hypothèse de configuration classique, pas les vraies règles Shorewall d'Evan : à confirmer avec lui.
 
+### Scènes des projets
+
+- Règle pour garder des animations fluides : ce qui bouge est un élément à part (HTML ou `<svg>` entier), jamais une forme à l'intérieur d'un grand SVG, sinon le navigateur redessine tout à chaque image.
+- Île (Minecraft) : calques empilés (`.st-lay`) qui se montent un par un à l'apparition, l'arbre et le serveur tombent dessus (`.st-drop`), puis les étiquettes (`.st-pin`). L'île flotte ensuite (`.st-bob`).
+- Champ (RoboCat) : une seule ligne de temps de 8 s, le piège claque, le signal part, la passerelle le reçoit et le relaie, le nuage réagit. Tout changement de durée doit rester aligné sur ces 8 s. Les tailles sont en `cqw` pour suivre la largeur de la scène.
+- Page « Tout le reste » : les bulles montent à l'arrivée, puis flottent sur deux axes à des rythmes différents (`.t-bub-x`, `.t-bub-y`). Le rebond au clic est posé sur `.t-bub-in`.
+
 ### Ciel selon l'heure
 
 - Le script du `<head>` pose `data-sky` sur `<html>` selon l'heure du visiteur : `night` de 21 h à 6 h, `dusk` de 18 h à 21 h et de 6 h à 8 h, `day` sinon.
@@ -98,7 +108,19 @@ Goûts d'Evan (novembre 2026), à respecter :
 - Surface : les trois plans de vagues glissent avec le pointeur, le passage du pointeur sur les vagues laisse de petites ondes, un clic fait partir trois anneaux et des gouttes (`ripple()`, calque `.fa-rip`).
 - Bulles libres (`bubble()`, calque fixe `.fa-fx`) : gerbe quand la surface traverse le milieu de l'écran, sillage du pointeur ou du doigt sous l'eau (hors cartes et boutons), colonne de bulles au clic sur `[data-rise]`.
 - `.fa-snow` : particules en suspension sous l'eau (un élément, des `box-shadow`).
-- Lampe des profondeurs (`.fa-lamp`, dernier enfant du décor sous-marin) : voile sombre fixe percé d'un rond de lumière, au-dessus du décor et sous le contenu, donc les cartes restent lisibles. Son opacité suit la profondeur, le rond suit le pointeur ; sur tactile il reste au centre de l'écran.
+- Lampe des profondeurs (`.fa-lamp`, dans le décor sous-marin ; seules les méduses et les lueurs du câble sont placées après elle) : voile sombre fixe percé d'un rond de lumière, au-dessus du décor et sous le contenu, donc les cartes restent lisibles. Son opacité suit la profondeur, le rond suit le pointeur ; sur tactile il reste au centre de l'écran.
+
+### Faune et câble
+
+- Décor créé par `sceneOn()` dans `main.js`, une fois, dans les deux mises en page : écrit dans le HTML, il faudrait le recopier à 4 endroits. Styles sans préfixe, en fin de `style.css`.
+- Horizon : un vol d'oiseaux (`.fa-birds`) traverse devant les montagnes, un voilier (`.fa-boat`) traverse le lac en passant derrière les collines.
+- Sous l'eau : méduses de verre (`.fa-jelly`, positions dans `JELLY`, une liste par mise en page) qui nagent par contractions ; un clic en fait filer une vers le haut. Parallaxe négative (`data-px`), donc elles semblent plus proches que le reste.
+- Fond : un câble sous-marin (`.fa-cable`, tracé `CABLE`) parcouru par trois lueurs (`.fa-glow`, deux bleues et une verte à contresens, comme les flux des schémas). Les lueurs sont déplacées point par point le long du tracé, recalculé au redimensionnement.
+- Méduses et lueurs sont au-dessus du voile de la lampe : elles restent visibles dans le noir du fond. Le câble, lui, est dessous et ne se voit qu'à la lampe.
+- Boucles : `.fa-loop` est le support fixe surveillé (il reçoit `.fa-off` hors écran), `.fa-anim` ce qui bouge dedans. Ne pas surveiller directement un élément qui sort de l'écran sur le côté : il serait mis en pause et ne reviendrait pas.
+- Plongée : quand on descend vite sous l'eau, des bulles filent vers le haut le long des bords (dans `tick`).
+- Sans animation (`prefers-reduced-motion`), tout reste posé à sa place.
+- Toujours pas de poissons : la faune reste du verre (méduses) ou des silhouettes lointaines (oiseaux).
 
 ### Démo jouable
 
@@ -119,15 +141,27 @@ Goûts d'Evan (novembre 2026), à respecter :
 - Effets tactiles : cartes qui basculent au défilement, gyroscope, reflet sous le doigt.
 - Ciel selon l'heure, lampe des profondeurs, surface de l'eau vivante.
 - Démarrage refait de zéro (quatrième version) : horizon, nom et reflet, ouverture en deux. Plus de faux journal système ni de police à chasse fixe.
+- Passe « verre et lumière » : schémas sur fond bleu vif (`.fa-fig`), nœuds en tuiles de verre avec ombre, reflet franc en biais sur le terminal et la carte de fin, boutons clairs opaques sous l'eau (ils viraient au gris), bouton désactivé en pointillés.
+- Plus d'éléments à la descente : oiseaux et voilier à l'horizon, méduses de verre, câble sous-marin lumineux, bulles de plongée, fond marin un peu plus haut (voir Faune et câble).
 - Corrections au passage : le second bouton « Lancer la démo » ne faisait rien ; un lien vers une carte pas encore apparue s'arrêtait environ 130 px trop bas.
+- Contenu : carte RoboCat V2 avec schéma animé, carte Minecraft corrigée (Forge et Fabric), étiquette « TP de cours » sur la maquette, page « Tout le reste » en FR et en EN.
 
 ## À faire
 
-Contenu (en attente d'Evan) :
+Règles de contenu (validées avec Evan le 18 novembre 2026) :
 
-- Jeu de zombies : déposer le build dans `jeux/zombie/index.html`. Tant qu'il n'y est pas, le bouton principal « Lancer une démo » mène à « Démo en préparation ».
-- Write-ups : Minecraft modé sur Oracle Cloud (Always Free, Crafty, migration depuis le PC portable) et maquette réseau VirtualBox (Shorewall, DMZ, OpenVPN, Squid). Copier le modèle dans `writeups/`, puis remplacer les boutons « Write-up bientôt » de l'accueil par un lien, en FR et en EN.
-- RPG façon Undertale : build web et visuel à ajouter (le cadre affiche « Visuel à venir »).
+- Accueil : les gros projets. Page « Tout le reste » : les TP de cours, les labs perso et l'IA.
+- RoboCat : garder la mention du prototype (capteur et batterie simulés) et la part d'Evan, du piège jusqu'à The Things Network, dans une équipe de trois. Ne pas nommer les coéquipiers, ne pas publier le rapport PDF tel quel.
+- Minecraft : ne pas annoncer de restauration de sauvegarde tant qu'elle n'a pas été testée.
+- Ce dépôt est public : aucune IP, aucun identifiant, aucun mot de passe, ni ici ni dans les pages.
+
+Contenu reporté (Evan le fournira plus tard) :
+
+- Homelab : Proxmox sur un PC dédié chez Evan, encore en cours de montage. Carte d'accueil à écrire quand il sera terminé (machine, services, accès).
+- Sites web : Evan montrera plus tard lesquels ajouter à la page « Tout », avec leurs liens.
+- Jeu de zombies : Evan le montrera plus tard. Déposer ensuite le build dans `jeux/zombie/index.html`. Tant qu'il n'y est pas, le bouton principal « Lancer une démo » mène à « Démo en préparation ».
+- Write-ups : Minecraft modé sur Oracle Cloud (Always Free, Crafty, migration depuis le PC portable), RoboCat V2 et maquette réseau VirtualBox (Shorewall, DMZ, OpenVPN, Squid). Copier le modèle dans `writeups/`, puis ajouter un bouton vers le write-up dans la scène du projet, en FR et en EN.
+- RPG façon Undertale : Evan enverra le jeu plus tard. Build web à ajouter (l'écran de combat annonce qu'il arrive bientôt).
 - Email pro : ajouter un bouton dans la section Contact des deux pages, bureau et mobile.
 - Confirmer les flux du schéma réseau avec les vraies règles Shorewall.
 

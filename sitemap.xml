@@ -6,4 +6,10 @@
   <url><loc>https://evanbonhoure.me/en/</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://evanbonhoure.me/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://evanbonhoure.me/en/"/></url>
+  <url><loc>https://evanbonhoure.me/tout/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://evanbonhoure.me/tout/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://evanbonhoure.me/en/all/"/></url>
+  <url><loc>https://evanbonhoure.me/en/all/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://evanbonhoure.me/tout/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://evanbonhoure.me/en/all/"/></url>
 </urlset>
